@@ -35,6 +35,14 @@ static void print_raw(const char *str, int len, const char *raw);
 static void rsa_init_from_devrandom(gmp_randstate_t state);
 #endif
 
+//Struct for a single point
+typedef struct { 
+    size_t rsa_decrypt_bytes;
+	char* message;
+	char* decrypted;
+	int message_bytes;
+} rsa_decrypt_t;
+
 void rsa_testkeys(rsa_keys_t *keys)
 {
 	mpz_inits(keys->p, keys->q, keys->n, 
