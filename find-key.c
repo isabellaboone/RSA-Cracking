@@ -21,7 +21,7 @@
 // My RSA library - don't use for NSA work
 #include "rsa.h"
 
-#define NUM_THREADS 4
+#define NUM_THREADS 16
 
 //Struct for a single key
 typedef struct { 
@@ -55,8 +55,7 @@ void *thread_func(void *thread_input){
 	rsa_decrypt_t *tread_struct = (rsa_decrypt_t *)thread_input;
 	int count = 0;
 
-	for (int i = tread_struct->start_row; i < tread_struct->end_row; i+=2) {
-	
+	while(tread_struct->start_row < tread_struct->end_row) {
 		// // print some progress out to the screen
 		// if (count++ == 50000) {
 		// 	printf("\r%lx/%lx %0.1f%%\n", i, poop_args->end_row, ((double)i/(double)poop_args->end_row)*100.0);
@@ -65,19 +64,21 @@ void *thread_func(void *thread_input){
 		// }
 		
 		// set the private key to try 
-		mpz_set_ui(tread_struct->keys.d, i);
+		mpz_set_ui(tread_struct->keys.d, tread_struct->start_row);
 		
 		// decrypt the message using our current guess
 		rsa_decrypt(tread_struct->encrypted, tread_struct->decrypted, tread_struct->bytes, &tread_struct->keys);
 		
 		// check to see if it starts with "<h1>"
 		if (!strncmp(tread_struct->decrypted,"<h1>",4)) {	
-				printf("Found key: %d %d\n", i, i);
+				printf("Found key: %ld %ld\n", tread_struct->start_row, tread_struct->start_row);
 				printf("Message: %s\n", tread_struct->decrypted);
 				
 				// this may actually be garbage.  so, don't quit.
 				// break
-			}
+		}
+
+		tread_struct->start_row+=2; 
 	}
 }
 
@@ -117,9 +118,8 @@ int main(int argc, char **argv)
 	unsigned long end = (1L << KEY_LEN) - 3;
 	int count = 0;
 	
-	pthread_t thread_ids[4];
-	rsa_decrypt_t concurrent_keys[4];
-
+	pthread_t thread_ids[NUM_THREADS];
+	rsa_decrypt_t concurrent_keys[NUM_THREADS];
 
 	for(int i=0; i<NUM_THREADS; i++){
 		concurrent_keys[i].start_row = i * (end/NUM_THREADS);
@@ -145,13 +145,12 @@ int main(int argc, char **argv)
 	}
 
 	for(int i=0; i<NUM_THREADS; i++){
-        pthread_create(&thread_ids[i], NULL, thread_func, &concurrent_keys[i]);
-    }
+    pthread_create(&thread_ids[i], NULL, thread_func, &concurrent_keys[i]);
+  }
 
-    for(int i=0; i<NUM_THREADS; i++){
-        pthread_join(thread_ids[i], NULL);
-    }
-    
+  for(int i=0; i<NUM_THREADS; i++){
+    pthread_join(thread_ids[i], NULL);
+  }
 
 	// free up the memory we gobbled up
 	free(encrypted);
