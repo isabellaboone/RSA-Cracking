@@ -21,7 +21,7 @@
 // My RSA library - don't use for NSA work
 #include "rsa.h"
 
-#define NUM_THREADS 16
+#define NUM_THREADS 4
 
 //Struct for a single key
 typedef struct { 
@@ -31,6 +31,7 @@ typedef struct {
 	char* decrypted;
 	long start_row;
     long end_row;
+	pthread_mutex_t lock;
 } rsa_decrypt_t;
 
 
@@ -54,10 +55,11 @@ void print_buff(int len, char *buf)
 void *thread_func(void *thread_input){
 	rsa_decrypt_t *tread_struct = (rsa_decrypt_t *)thread_input;
 	int count = 0;
-
+	
 	while(tread_struct->start_row < tread_struct->end_row) {
-		// // print some progress out to the screen
+		// print some progress out to the screen
 		// if (count++ == 50000) {
+			
 		// 	printf("\r%lx/%lx %0.1f%%\n", i, poop_args->end_row, ((double)i/(double)poop_args->end_row)*100.0);
 		// 	//fflush(stdout);
 		// 	count = 0;
@@ -68,18 +70,25 @@ void *thread_func(void *thread_input){
 		
 		// decrypt the message using our current guess
 		rsa_decrypt(tread_struct->encrypted, tread_struct->decrypted, tread_struct->bytes, &tread_struct->keys);
-		
+
 		// check to see if it starts with "<h1>"
 		if (!strncmp(tread_struct->decrypted,"<h1>",4)) {	
+			printf("LOCKING THREAD %ld\n", tread_struct->end_row);
+			pthread_mutex_lock(&tread_struct->lock);
 				printf("Found key: %ld %ld\n", tread_struct->start_row, tread_struct->start_row);
 				printf("Message: %s\n", tread_struct->decrypted);
-				
+				fflush(stdout);
 				// this may actually be garbage.  so, don't quit.
 				// break
+			pthread_mutex_unlock(&tread_struct->lock);
+			printf("UNLOCKING %ld\n", tread_struct->end_row);
 		}
 
 		tread_struct->start_row+=2; 
 	}
+
+	printf("I FINISHED %ld\n", tread_struct->end_row);
+
 }
 
 
@@ -92,7 +101,7 @@ int main(int argc, char **argv)
 	// it has to be large enough to handle the padding we might
 	// get back from the encrypted/decrypted functions
 	char *encrypted = malloc(1024*2);
-	char *decrypted = malloc(1024*2);
+	// char *decrypted = malloc(1024*2);
 
 	// read the public keys from the file
 	printf("Reading Alice's public keys\n");
@@ -120,6 +129,8 @@ int main(int argc, char **argv)
 	
 	pthread_t thread_ids[NUM_THREADS];
 	rsa_decrypt_t concurrent_keys[NUM_THREADS];
+	pthread_mutex_t lock;
+	pthread_mutex_init(&lock, NULL);
 
 	for(int i=0; i<NUM_THREADS; i++){
 		concurrent_keys[i].start_row = i * (end/NUM_THREADS);
@@ -141,7 +152,8 @@ int main(int argc, char **argv)
 		concurrent_keys[i].keys = keys;
 		concurrent_keys[i].bytes = bytes;
 		concurrent_keys[i].encrypted = encrypted;
-		concurrent_keys[i].decrypted = decrypted;
+		concurrent_keys[i].decrypted = malloc(1024*2);
+		concurrent_keys[i].lock = lock;
 	}
 
 	for(int i=0; i<NUM_THREADS; i++){
@@ -154,7 +166,7 @@ int main(int argc, char **argv)
 
 	// free up the memory we gobbled up
 	free(encrypted);
-	free(decrypted);
+	// free(decrypted);
 	free(fname);
 	
 	mpz_clear(keys.d);
