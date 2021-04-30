@@ -23,10 +23,12 @@ char * find_primes(unsigned long num, char *f) {
     num /= 2;
     count++; 
   }
+  
   if(count > 0) {
     printf("2 %d\n", count);
     // sprintf(f, "2 %d, ", count);
   }
+
   for(long i = 3; i <= (sqrtl(num)); i += 2) { 
     count = 0; 
     while(num % i == 0) { 
