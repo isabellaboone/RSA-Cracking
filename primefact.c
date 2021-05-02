@@ -1,7 +1,9 @@
 /**
  * @file primefact.c
- * @author Isabella Boone (ib2573@ship.edu)
- * @brief 
+ * @author Isabella Boone 
+ * @author John Gable
+ * @author Joshua Lewis
+ * @brief Find prime factors of a number. 
  * @version 0.1
  * @date 2021-04-29
  * 
@@ -15,6 +17,7 @@
 #include <stdlib.h> // 
 #include <math.h> // maths
 #include "primefact.h"
+
 uint64_t gcd (uint64_t a, uint64_t b) { 
   return b == 0 ? a : gcd(b, a % b); 
 }
