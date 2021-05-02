@@ -24,17 +24,8 @@
 #include "rsa.h"
 #include "primefact.h"
 
-#define NUM_THREADS 8 // Number of threads
+#define NUM_THREADS 16 // Number of threads
 #define BLOCK_LEN 32	 // Max num of chars in message (in bytes)
-
-//Struct for a single key
-typedef struct
-{
-	rsa_keys_t *keys;
-	int *found;
-	uint64_t p;
-	//pthread_mutex_t lock;
-} rsa_decrypt_t;
 
 /**
  * @brief Start the timer. 
@@ -84,12 +75,12 @@ void *thread_func(void *thread_input)
 	rsa_decrypt_t *thread_struct = (rsa_decrypt_t *)thread_input;
 
 	int condition = 1;
+	
+	uint64_t p = pollardRho(mpz_get_ui(thread_struct->keys->n), thread_struct);
 	if (*thread_struct->found == 1) {
-		printf("Exiting because it was found!\n");
-		return NULL;
+			printf("Exiting because it was found!\n");
+			return NULL;
 	}
-
-	uint64_t p = pollardRho(mpz_get_ui(thread_struct->keys->n));
 	uint64_t q = mpz_get_ui(thread_struct->keys->n) / p;
 
 	uint64_t phi_n = (p - 1) * (q - 1);
@@ -98,7 +89,7 @@ void *thread_func(void *thread_input)
 	mpz_init(phi_n_2);
 	mpz_set_ui(phi_n_2, phi_n);
 	mpz_invert(thread_struct->keys->d, thread_struct->keys->e, phi_n_2);
-
+	
 	*thread_struct->found = 1;
 }
 

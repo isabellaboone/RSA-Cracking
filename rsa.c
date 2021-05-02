@@ -310,12 +310,7 @@ size_t rsa_decrypt(char *message, char *decrypted, int message_bytes,
 	// for each chunk of the message, decrypt that chunk and go to next chunk
 	int curr_byte = 0;
 	while (curr_byte < message_bytes) {
-		
-		int out_bytes = rsa_decrypt_block(keys->d, keys->n, 
-			in_block_size, out_block_size, 
-			message+curr_byte,
-			decrypted+decrypted_bytes);
-		
+		int out_bytes = rsa_decrypt_block(keys->d, keys->n, in_block_size, out_block_size, message+curr_byte, decrypted+decrypted_bytes);
 		curr_byte += in_block_size;
 		decrypted_bytes += out_block_size;
 	}
