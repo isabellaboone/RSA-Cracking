@@ -121,11 +121,11 @@ int main(int argc, char **argv)
 
 		// Read public keys from file
 		char *fname = malloc(1024);
-		sprintf(fname, "public-%d.txt", keysize);
+		sprintf(fname, "keys/public-%d.txt", keysize);
 		rsa_read_public_keys(&keys, fname);
 
 		printf("Reading encrypted message\n");
-		sprintf(fname, "encrypted-%d.dat", keysize);
+		sprintf(fname, "keys/encrypted-%d.dat", keysize);
 		FILE *fp = fopen(fname, "r+");
 
 		if (fp == NULL)
