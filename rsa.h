@@ -7,8 +7,16 @@
 #define _RSA_H
 
 #include <gmp.h>
+#include <stdio.h>
+#include <math.h> 
+#include <stdint.h> // For uint64
+#include <stdlib.h> // 
+#include <math.h> // maths
+
+
 
 typedef mpz_t rsakey_t;
+
 
 typedef struct {
 	unsigned int num_bits;
@@ -21,6 +29,14 @@ typedef struct {
 	rsakey_t d;
 	rsakey_t e;
 } rsa_keys_t;
+
+typedef struct
+{
+	rsa_keys_t *keys;
+	int *found;
+	uint64_t p;
+	//pthread_mutex_t lock;
+} rsa_decrypt_t;
 
 #ifdef linux
 // how many byte shall we read from random source

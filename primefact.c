@@ -11,12 +11,8 @@
  * 
  */
 
-#include <stdio.h>
-#include <math.h> 
-#include <stdint.h> // For uint64
-#include <stdlib.h> // 
-#include <math.h> // maths
 #include "primefact.h"
+
 
 uint64_t gcd (uint64_t a, uint64_t b) { 
   return b == 0 ? a : gcd(b, a % b); 
@@ -39,7 +35,11 @@ int modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus)
     return result;
 }
 
-uint64_t pollardRho(uint64_t n) { 
+uint64_t pollardRho(uint64_t n, rsa_decrypt_t *thread_struct) { 
+  if(*(thread_struct->found) == 1) { 
+    return 0; 
+  }
+
   int s = rand(); 
   // No prime divisor for 1
   if(n == 1) {
@@ -65,7 +65,7 @@ uint64_t pollardRho(uint64_t n) {
 
     d = gcd(abs(x - y), n); 
 
-    if(d == n) return pollardRho(n);
+    if(d == n) return pollardRho(n, thread_struct);
   }
 
   return d; 
