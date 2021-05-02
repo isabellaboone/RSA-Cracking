@@ -22,6 +22,7 @@
 
 // My RSA library - don't use for NSA work
 #include "rsa.h"
+#include "primefact.h"
 
 #define NUM_THREADS 16 // Number of threads
 #define BLOCK_LEN 32 // Max num of chars in message (in bytes)
@@ -139,7 +140,7 @@ int main(int argc, char **argv)
 		// it has to be large enough to handle the padding we might
 		// get back from the encrypted/decrypted functions
 		char *encrypted = malloc(1024*2);
-		// char *decrypted = malloc(1024*2);
+		char *decrypted = malloc(1024*2);
 
 		printf("Enter key size: "); 
 		scanf("%d", &keysize); // scanf bad but i'm lazy, change this to fgets later
@@ -172,41 +173,22 @@ int main(int argc, char **argv)
 		unsigned long end = (1L << keysize) - 3;
 		int count = 0;
 
-		pthread_t thread_ids[NUM_THREADS];
-		rsa_decrypt_t concurrent_keys[NUM_THREADS];
-		//pthread_mutex_t lock;
-		//pthread_mutex_init(&lock, NULL);
+		uint64_t p = pollardRho(mpz_get_ui(keys.n)); 
+		uint64_t q = mpz_get_ui(keys.n) / p; 
 
-		for(int i=0; i<NUM_THREADS; i++){
-			concurrent_keys[i].start_row = i * (end/NUM_THREADS);
-			concurrent_keys[i].end_row = concurrent_keys[i].start_row + (end/NUM_THREADS);
-			if (concurrent_keys[i].start_row == 0){
-				concurrent_keys[i].start_row = 3;
-				//concurrent_keys[i].end_row = concurrent_keys[i].start_row + (end/NUM_THREADS);
-			}
-			// printf("START: %ld\n", concurrent_keys[i].start_row);
-			// printf("END: %ld\n", concurrent_keys[i].end_row);
-			// Initialize the RSA key (candidate private key)
-			mpz_init(keys.d);
-			concurrent_keys[i].keys = keys;
-			concurrent_keys[i].bytes = bytes;
-			concurrent_keys[i].encrypted = encrypted;
-			concurrent_keys[i].decrypted = malloc(1024*2);
-			concurrent_keys[i].found = found;
-			//concurrent_keys[i].lock = lock;
-		}
+		uint64_t phi_n = (p - 1) * (q - 1); 
 
-		for(int i=0; i<NUM_THREADS; i++){
-   	  pthread_create(&thread_ids[i], NULL, thread_func, &concurrent_keys[i]);
-  	}
+		mpz_t result, phi_n_2; 
+		mpz_init(result); 
+		mpz_init(phi_n_2);
+		mpz_set_ui(phi_n_2, phi_n);
+		mpz_invert(keys.d, keys.e, phi_n_2);
 
-  	for(int i=0; i<NUM_THREADS; i++){
-    	pthread_join(thread_ids[i], NULL);
- 	 	}
-
+		rsa_decrypt(encrypted, decrypted, bytes, &keys);
+		printf("Message: %s\n", decrypted);
 		// free up the memory we gobbled up
 		free(encrypted);
-		// free(decrypted);
+		free(decrypted);
 		free(fname);
 	
 		mpz_clear(keys.d);

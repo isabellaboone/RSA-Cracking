@@ -11,54 +11,69 @@
 
 #include <stdio.h>
 #include <math.h> 
+#include <stdint.h> // For uint64
+#include <stdlib.h> // 
+#include <math.h> // maths
+#include "primefact.h"
+uint64_t gcd (uint64_t a, uint64_t b) { 
+  return b == 0 ? a : gcd(b, a % b); 
+}
 
-typedef struct { 
-  long p; 
-  long q; 
-} n_t; 
-
-char * find_primes(unsigned long num, char *f) {
-  int count = 0; 
-  while(!(num % 2 > 0)) { 
-    num /= 2;
-    count++; 
-  }
+/* Iterative Function to calculate (x^y) in O(log y) */
+int modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus)
+{
+    int result = 1;     // Initialize result
   
-  if(count > 0) {
-    printf("2 %d\n", count);
-    // sprintf(f, "2 %d, ", count);
-  }
-
-  for(long i = 3; i <= (sqrtl(num)); i += 2) { 
-    count = 0; 
-    while(num % i == 0) { 
-      count++; 
-      num /= i; 
+    while (exponent > 0) {
+      // If y is odd, multiply x with result
+      if (exponent % 2 == 1)
+        result = (result*base) % modulus;
+  
+      // y must be even now
+      exponent = exponent>>1; // y = y/2
+      base = (base*base) % modulus;   // Change x to x^2
     }
-    if (count > 0) {
-      // sprintf(f, "%ld %d, ", i, count);
-      printf("for: %ld %d\n", i, count); 
-    }
-
-  }
-
-  if (num > 2) { 
-    // sprintf(f, "%ld 1, ", num); 
-    printf("last %ld 1", num);
-  }
-  // printf("%s\n", f);
+    return result;
 }
 
-int main(void) {
-  unsigned long num; 
-  printf("Enter number to find prime factorization of: \n");
-  scanf("%ld", &num); 
+uint64_t pollardRho(uint64_t n) { 
+  int s = rand(); 
+  // No prime divisor for 1
+  if(n == 1) {
+    return n; 
+  }
 
-  printf("Finding prime factors of %lu\n", num);
+  // Even means one of the divisors is 2
+  if (n % 2 == 0) { 
+    return 2; 
+  }
 
-  char string[1024]; 
+  uint64_t x = (uint64_t)(rand() % (n - 2)) + 2; 
+  uint64_t y = x; 
+  uint64_t c = (uint64_t)rand() % (n - 1) + 1;
+  // initialize candidate divisor 
+  uint64_t d = 1l; 
 
-  find_primes(num, string); 
+  while (d == 1) { 
+    x = (modular_pow(x, 2, n) + c + n) % n; 
 
-  return 0; 
+    y = (modular_pow(y, 2, n) + c + n) % n; 
+    y = (modular_pow(y, 2, n) + c + n) % n;
+
+    d = gcd(abs(x - y), n); 
+
+    if(d == n) return pollardRho(n);
+  }
+
+  return d; 
 }
+
+
+// int main(void) {
+//   uint64_t n; 
+//   printf("Enter n: \n");
+//   scanf("%ld", &n);
+//   printf("%lu\n", n);
+
+//   printf("One of the divisors for %lu is %lu\n", n, pollardRho(n));
+// }
