@@ -19,7 +19,6 @@
 #define RSA
 #include "rsa.h"
 
-uint64_t gcd (uint64_t a, uint64_t b);
-uint64_t pollardRho(uint64_t n, rsa_decrypt_t *thread_struct); 
-int modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus);
+void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct);
+void modular_power_mpz(mpz_t var, mpz_t n, mpz_t c);
 #endif

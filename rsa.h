@@ -34,7 +34,7 @@ typedef struct
 {
 	rsa_keys_t *keys;
 	int *found;
-	uint64_t p;
+	mpz_t p;
 	//pthread_mutex_t lock;
 } rsa_decrypt_t;
 
