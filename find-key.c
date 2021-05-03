@@ -67,48 +67,50 @@ void print_buff(int len, char *buf)
 /**
  * @brief Method each thread follows upon launch. 
  * 
- * @param thread_input 
- * @return void* 
+ * @param thread_input rsa_decrypt_t struct containing 
+ *   information necessary to crack stuff. 
  */
-void *thread_func(void *thread_input)
-{
+void *thread_func(void *thread_input) {
+  // Create constant as mpz_t
 	mpz_t ONE; 
 	mpz_init(ONE); 
 	mpz_set_ui(ONE, 1); 
 
 	rsa_decrypt_t *thread_struct = (rsa_decrypt_t *)thread_input;
 
+  // Create & initialize p
 	mpz_t p; 
 	mpz_init(p); 
 	mpz_init(thread_struct->p);
+  // Call pollardrho to find p value
 	pollardRho(thread_struct->keys->n, thread_struct);
 
-	mpz_set(p, thread_struct->p); 
-
+  // Check if any other thread has already finished the prime factorization first. 
 	if (*thread_struct->found == 1) {
 		printf("Exiting because it was found!\n");
 	}
+  
+	mpz_set(p, thread_struct->p); // copy p over
 
+  // Create, initialize and calculate q (n/p = q)
 	mpz_t q; 
 	mpz_init(q);
 	mpz_div(q, thread_struct->keys->n, p); 
 
+  // Create and initialize phi_n
 	mpz_t phi_n;
 	mpz_init(phi_n);
-	
+  
+  // Subtract 1 from p and q
 	mpz_sub(p, p, ONE); 
 	mpz_sub(q, q, ONE); 
 
-	mpz_mul(phi_n, p, q); // uint64_t phi_n = (p - 1) * (q - 1);
-	
-	mpz_t result, phi_n_2;
-	mpz_init(result);
-	mpz_init(phi_n_2);
-	mpz_set(phi_n_2, phi_n);
+  // Calculate phi_n = (p-1) * (q-1)
+	mpz_mul(phi_n, p, q); 
+
+  // Initialize keys->d, and calculate d
 	mpz_init(thread_struct->keys->d);
-	mpz_invert(thread_struct->keys->d, thread_struct->keys->e, phi_n_2);
-	
-	*thread_struct->found = 1;
+	mpz_invert(thread_struct->keys->d, thread_struct->keys->e, phi_n);
 }
 
 int main(int argc, char **argv) {
@@ -142,7 +144,7 @@ int main(int argc, char **argv) {
 		printf("Read %d bytes\n", bytes);
 		fclose(fp);
 
-		struct timespec t = timer_start();
+		struct timespec t = timer_start(); // Start timer
 
 		pthread_t thread_ids[NUM_THREADS];
 		rsa_decrypt_t concurrent_keys[NUM_THREADS];
@@ -167,7 +169,10 @@ int main(int argc, char **argv) {
 		rsa_decrypt(encrypted, decrypted, bytes, &keys);
 		printf("Message: %s\n", decrypted);
 
-		// free up the memory we gobbled up
+		uint64_t endtimer = timer_end(t);
+		printf("Took %lu usecs\n", endtimer);
+
+		// Free up the memory we gobbled up
 		free(encrypted);
 		free(decrypted);
 		free(fname);
@@ -178,8 +183,5 @@ int main(int argc, char **argv) {
 		mpz_clear(keys.p);
 		mpz_clear(keys.q);
 
-		uint64_t endtimer = timer_end(t);
-		printf("Took %lu usecs\n", endtimer);
 	}
-	printf("Exiting\n");
 }
