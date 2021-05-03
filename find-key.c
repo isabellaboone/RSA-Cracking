@@ -24,13 +24,13 @@
 #include "rsa.h"
 #include "primefact.h"
 
-#define NUM_THREADS 16 // Number of threads
+#define NUM_THREADS 1 // Number of threads
 #define BLOCK_LEN 32	 // Max num of chars in message (in bytes)
 
 /**
  * @brief Start the timer. 
  * 
- * @return struct timespec 
+ * @return struct timespec of currect time.
  */
 struct timespec timer_start()
 {
@@ -43,7 +43,7 @@ struct timespec timer_start()
  * @brief End the timer. Return how long the timer went for. 
  * 
  * @param tick struct timesspec of when timer was started. 
- * @return uint64_t Unsigned int of total time in ns. 
+ * @return uint64_t Unsigned int of total time in us. 
  */
 uint64_t timer_end(struct timespec tick)
 {
@@ -72,52 +72,57 @@ void print_buff(int len, char *buf)
  */
 void *thread_func(void *thread_input)
 {
+	mpz_t ONE; 
+	mpz_init(ONE); 
+	mpz_set_ui(ONE, 1); 
+
 	rsa_decrypt_t *thread_struct = (rsa_decrypt_t *)thread_input;
 
-	int condition = 1;
-	
-	uint64_t p = pollardRho(mpz_get_ui(thread_struct->keys->n), thread_struct);
-	if (*thread_struct->found == 1) {
-			printf("Exiting because it was found!\n");
-			return NULL;
-	}
-	uint64_t q = mpz_get_ui(thread_struct->keys->n) / p;
+	mpz_t p; 
+	mpz_init(p); 
+	mpz_init(thread_struct->p);
+	pollardRho(thread_struct->keys->n, thread_struct);
 
-	uint64_t phi_n = (p - 1) * (q - 1);
+	mpz_set(p, thread_struct->p); 
+
+	if (*thread_struct->found == 1) {
+		printf("Exiting because it was found!\n");
+	}
+
+	mpz_t q; 
+	mpz_init(q);
+	mpz_div(q, thread_struct->keys->n, p); 
+
+	mpz_t phi_n;
+	mpz_init(phi_n);
+	
+	mpz_sub(p, p, ONE); 
+	mpz_sub(q, q, ONE); 
+
+	mpz_mul(phi_n, p, q); // uint64_t phi_n = (p - 1) * (q - 1);
+	
 	mpz_t result, phi_n_2;
 	mpz_init(result);
 	mpz_init(phi_n_2);
-	mpz_set_ui(phi_n_2, phi_n);
+	mpz_set(phi_n_2, phi_n);
+	mpz_init(thread_struct->keys->d);
 	mpz_invert(thread_struct->keys->d, thread_struct->keys->e, phi_n_2);
 	
 	*thread_struct->found = 1;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int flag = 1;
 
-	while (flag)
-	{
-		int keysize;
+	while (flag) {
+		int keysize; // user input, key to run
 		rsa_keys_t keys; // the RSA keys
 		int *found = calloc(10, sizeof(int));
-
-		// a block of text for the encrypted and decrypted messages
-		// it has to be large enough to handle the padding we might
-		// get back from the encrypted/decrypted functions
 		char *encrypted = malloc(1024 * 2);
 		char *decrypted = malloc(1024 * 2);
 
 		printf("Enter key size: ");
 		scanf("%d", &keysize); // scanf bad but i'm lazy, change this to fgets later
-
-		printf("%d\n", keysize);
-
-		if (keysize == 0)
-		{
-			flag = 0;
-		}
 
 		// Read public keys from file
 		char *fname = malloc(1024);
@@ -128,8 +133,7 @@ int main(int argc, char **argv)
 		sprintf(fname, "keys/encrypted-%d.dat", keysize);
 		FILE *fp = fopen(fname, "r+");
 
-		if (fp == NULL)
-		{
+		if (fp == NULL) {
 			perror("could not open encrypted text");
 			exit(-1);
 		}
@@ -138,28 +142,15 @@ int main(int argc, char **argv)
 		printf("Read %d bytes\n", bytes);
 		fclose(fp);
 
-		unsigned long i;
-		unsigned long end = (1L << keysize) - 3;
-		int count = 0;
-
 		struct timespec t = timer_start();
-
-		uint64_t chunk_size = mpz_get_ui(keys.n) / 2 / NUM_THREADS;
 
 		pthread_t thread_ids[NUM_THREADS];
 		rsa_decrypt_t concurrent_keys[NUM_THREADS];
-		//pthread_mutex_t lock;
-		//pthread_mutex_init(&lock, NULL);
 
 		// Initialize concurrent_keys[i]
-		for (int i = 0; i < NUM_THREADS; i++)
-		{
-			// Initialize the RSA key (candidate private key)
-			mpz_init(keys.d);
-
+		for (int i = 0; i < NUM_THREADS; i++) {
 			concurrent_keys[i].keys = &keys;
 			concurrent_keys[i].found = found;
-			//concurrent_keys[i].lock = lock;
 		}
 
 		// Launch threads
@@ -167,10 +158,12 @@ int main(int argc, char **argv)
 			pthread_create(&thread_ids[i], NULL, thread_func, &concurrent_keys[i]);
 		}
 
+		// Rejoin threads
 		for (int i = 0; i < NUM_THREADS; i++)	{
 			pthread_join(thread_ids[i], NULL);
 		}
 
+		// Decrypt 
 		rsa_decrypt(encrypted, decrypted, bytes, &keys);
 		printf("Message: %s\n", decrypted);
 
@@ -178,7 +171,7 @@ int main(int argc, char **argv)
 		free(encrypted);
 		free(decrypted);
 		free(fname);
-
+		free(found);
 		mpz_clear(keys.d);
 		mpz_clear(keys.n);
 		mpz_clear(keys.e);
