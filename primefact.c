@@ -98,8 +98,8 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
 
   // Caclulate c -- uint64_t c = (uint64_t)rand() % (n - 1) + 1;
   mpz_sub(n_copy, n, ONE); // n - 1
-  mpz_mod(y, rand2, n_copy); // rand % n - 1
-  mpz_add(y, y, ONE); // rand % n - 1 + 1
+  mpz_mod(c, rand2, n_copy); // rand % n - 1
+  mpz_add(c, c, ONE); // rand % n - 1 + 1
 
   mpz_set(d, ONE); // uint64_t d = 1l; me thinks? 
 
