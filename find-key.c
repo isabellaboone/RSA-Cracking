@@ -24,7 +24,7 @@
 #include "rsa.h"
 #include "primefact.h"
 
-#define NUM_THREADS 2 // Number of threads
+#define NUM_THREADS 4 // Number of threads
 #define BLOCK_LEN 32	 // Max num of chars in message (in bytes)
 
 /**
@@ -85,11 +85,6 @@ void *thread_func(void *thread_input) {
   // Call pollardrho to find p value
 	pollardRho(thread_struct->keys->n, thread_struct);
 
-  // Check if any other thread has already finished the prime factorization first. 
-	if (*thread_struct->found == 1) {
-		printf("Exiting because it was found!\n");
-		pthread_exit(NULL);
-	}
   
 	mpz_set(p, thread_struct->p); // copy p over
 
@@ -169,7 +164,6 @@ int main(int argc, char **argv) {
 			pthread_join(thread_ids[i], NULL);
 		}
 
-    printf("hey after threads");
 		// Decrypt 
 		rsa_decrypt(encrypted, decrypted, bytes, &keys);
 		printf("Message: %s\n", decrypted);

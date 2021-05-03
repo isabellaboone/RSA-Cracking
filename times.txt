@@ -19,3 +19,97 @@
 80 bit key took 356033 usec	msg:	
 90 bit key took 491219 usec	msg:	
 100 bit key took 12781286 usec	msg:	
+12 bit key took 131505 usec	msg:	
+20 bit key took 3406 usec	msg:	
+32 bit key took 4630 usec	msg:	
+40 bit key took 4776 usec	msg:	
+50 bit key took 96436 usec	msg:	
+54 bit key took 2128 usec	msg:	
+56 bit key took 153448 usec	msg:	
+60 bit key took 842216 usec	msg:	
+64 bit key took 2310714 usec	msg:	
+70 bit key took 5030442 usec	msg:	
+80 bit key took 26639073 usec	msg:	
+12 bit key took 1882 usec	msg:	
+20 bit key took 611 usec	msg:	
+32 bit key took 705 usec	msg:	
+40 bit key took 340 usec	msg:	
+50 bit key took 1721 usec	msg:	
+54 bit key took 2850 usec	msg:	
+56 bit key took 4631 usec	msg:	
+60 bit key took 16986 usec	msg:	
+64 bit key took 37975 usec	msg:	
+70 bit key took 70006 usec	msg:	
+80 bit key took 355638 usec	msg:	
+90 bit key took 491281 usec	msg:	
+100 bit key took 12356344 usec	msg:	
+12 bit key took 130129 usec	msg:	
+20 bit key took 3801 usec	msg:	
+32 bit key took 3967 usec	msg:	
+40 bit key took 5746 usec	msg:	
+50 bit key took 96800 usec	msg:	
+54 bit key took 3137 usec	msg:	
+56 bit key took 153282 usec	msg:	
+12 bit key took 1458 usec	msg:	
+20 bit key took 424 usec	msg:	
+32 bit key took 437 usec	msg:	
+40 bit key took 424 usec	msg:	
+50 bit key took 4002 usec	msg:	
+54 bit key took 970 usec	msg:	
+56 bit key took 3614 usec	msg:	
+60 bit key took 16351 usec	msg:	
+64 bit key took 37561 usec	msg:	
+70 bit key took 70787 usec	msg:	
+80 bit key took 357741 usec	msg:	
+90 bit key took 505405 usec	msg:	
+12 bit key took 563 usec	msg:	<h1>this is a te
+20 bit key took 331 usec	msg:	<h1>this is a test</h1>
+32 bit key took 1064 usec	msg:	<h1>Poopy poop!</h1>¶%†›
+40 bit key took 422 usec	msg:	<h1>Change is inevitable, except from a vending machine.</h1>
+50 bit key took 1549 usec	msg:	<h1>When trying to fight fire with fire, remember, the fire department uses water.</h1>
+54 bit key took 1242 usec	msg:	<h1>I'm so proud, the puzzle said 3-5 years, it only took me 2 hours.</h1>
+56 bit key took 5178 usec	msg:	<h1>I got hit in the head with a soda can.  Lucky for me, it was a soft drink.</h1>
+60 bit key took 15929 usec	msg:	<h1>Early bird gets the worm.  Second mouse gets the cheese.</h1>
+64 bit key took 39767 usec	msg:	<h1>If Walmart keeps lowering prices, why isn't anything free?</h1>
+70 bit key took 71453 usec	msg:	<h1>In the south, fairy tales begin with Y'all aint gonna believe this!</h1>
+80 bit key took 361614 usec	msg:	<h1>A positive attitude will not solve all your problems, but will annoy enough people to make it worth it.</h1>\[
+90 bit key took 483213 usec	msg:	<h1>Alchohol is not a problem, is a solution! C2H5OH+H2O</h1>
+12 bit key took 553 usec	msg:	<h1>this is a te
+20 bit key took 1249 usec	msg:	<h1>this is a test</h1>
+32 bit key took 301 usec	msg:	<h1>Poopy poop!</h1>¶%†›
+40 bit key took 383 usec	msg:	<h1>Change is inevitable, except from a vending machine.</h1>
+50 bit key took 2306 usec	msg:	<h1>When trying to fight fire with fire, remember, the fire department uses water.</h1>
+54 bit key took 386 usec	msg:	<h1>I'm so proud, the puzzle said 3-5 years, it only took me 2 hours.</h1>
+56 bit key took 2883 usec	msg:	<h1>I got hit in the head with a soda can.  Lucky for me, it was a soft drink.</h1>
+60 bit key took 15784 usec	msg:	<h1>Early bird gets the worm.  Second mouse gets the cheese.</h1>
+64 bit key took 38096 usec	msg:	<h1>If Walmart keeps lowering prices, why isn't anything free?</h1>
+70 bit key took 68690 usec	msg:	<h1>In the south, fairy tales begin with Y'all aint gonna believe this!</h1>
+80 bit key took 355743 usec	msg:	<h1>A positive attitude will not solve all your problems, but will annoy enough people to make it worth it.</h1>\[
+90 bit key took 490183 usec	msg:	<h1>Alchohol is not a problem, is a solution! C2H5OH+H2O</h1>
+100 bit key took 12809930 usec	msg:	<h1>pneumonoultramicroscopicsilicovolcanoconiosis</h1>
+12 bit key took 576 usec	msg:	<h1>this is a te
+20 bit key took 968 usec	msg:	<h1>this is a test</h1>
+32 bit key took 408 usec	msg:	<h1>Poopy poop!</h1>¶%†›
+40 bit key took 467 usec	msg:	<h1>Change is inevitable, except from a vending machine.</h1>
+50 bit key took 2857 usec	msg:	<h1>When trying to fight fire with fire, remember, the fire department uses water.</h1>
+54 bit key took 282 usec	msg:	<h1>I'm so proud, the puzzle said 3-5 years, it only took me 2 hours.</h1>
+56 bit key took 5632 usec	msg:	<h1>I got hit in the head with a soda can.  Lucky for me, it was a soft drink.</h1>
+60 bit key took 22505 usec	msg:	<h1>Early bird gets the worm.  Second mouse gets the cheese.</h1>
+64 bit key took 70424 usec	msg:	<h1>If Walmart keeps lowering prices, why isn't anything free?</h1>
+70 bit key took 88096 usec	msg:	<h1>In the south, fairy tales begin with Y'all aint gonna believe this!</h1>
+80 bit key took 356379 usec	msg:	<h1>A positive attitude will not solve all your problems, but will annoy enough people to make it worth it.</h1>\[
+90 bit key took 484663 usec	msg:	<h1>Alchohol is not a problem, is a solution! C2H5OH+H2O</h1>
+100 bit key took 12566487 usec	msg:	<h1>pneumonoultramicroscopicsilicovolcanoconiosis</h1>
+12 bit key took 723 usec	msg:	<h1>this is a te
+20 bit key took 943 usec	msg:	<h1>this is a test</h1>
+32 bit key took 542 usec	msg:	<h1>Poopy poop!</h1>¶%†›
+40 bit key took 472 usec	msg:	<h1>Change is inevitable, except from a vending machine.</h1>
+50 bit key took 3770 usec	msg:	<h1>When trying to fight fire with fire, remember, the fire department uses water.</h1>
+54 bit key took 288 usec	msg:	<h1>I'm so proud, the puzzle said 3-5 years, it only took me 2 hours.</h1>
+56 bit key took 7377 usec	msg:	<h1>I got hit in the head with a soda can.  Lucky for me, it was a soft drink.</h1>
+60 bit key took 22426 usec	msg:	<h1>Early bird gets the worm.  Second mouse gets the cheese.</h1>
+64 bit key took 48137 usec	msg:	<h1>If Walmart keeps lowering prices, why isn't anything free?</h1>
+70 bit key took 84899 usec	msg:	<h1>In the south, fairy tales begin with Y'all aint gonna believe this!</h1>
+80 bit key took 445316 usec	msg:	<h1>A positive attitude will not solve all your problems, but will annoy enough people to make it worth it.</h1>\[
+90 bit key took 613544 usec	msg:	<h1>Alchohol is not a problem, is a solution! C2H5OH+H2O</h1>
+100 bit key took 14766976 usec	msg:	<h1>pneumonoultramicroscopicsilicovolcanoconiosis</h1>

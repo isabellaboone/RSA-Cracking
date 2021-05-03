@@ -53,7 +53,7 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
 
   // Return if has already been found
   if(*(thread_struct->found) == 1) { 
-    return;
+    pthread_exit(NULL);
   }
 
   // Need to initialize a randstate for mpz_urandomb
