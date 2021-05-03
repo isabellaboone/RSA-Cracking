@@ -400,8 +400,8 @@ void rsa_read_public_keys(rsa_keys_t *keys, const char *fname)
 	mpz_inp_str(keys->n,fp,16);
 	mpz_inp_str(keys->e,fp,16);
 	
-	print_key("Read n: ", keys->n);
-	print_key("Read n: ", keys->e);
+	// print_key("Read n: ", keys->n);
+	// print_key("Read n: ", keys->e);
 	fclose(fp);
 }
 

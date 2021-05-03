@@ -30,7 +30,7 @@
 /**
  * @brief Start the timer. 
  * 
- * @return struct timespec of currect time.
+ * @return struct timespec of current time.
  */
 struct timespec timer_start()
 {
@@ -114,33 +114,36 @@ void *thread_func(void *thread_input) {
 }
 
 int main(int argc, char **argv) {
-	int flag = 1;
+	char *encrypted = malloc(1024 * 2);
+	char *decrypted = malloc(1024 * 2);
+	char *fname = malloc(1024);
+	int keysize[] = {12, 20, 32, 40, 50, 54, 56, 60, 64, 70, 80, 90, 100, 110, 120, 140, 160, 180, 200}; 
 
-	while (flag) {
-		int keysize; // user input, key to run
+	for (int j = 0; j < 19; j++) {
+    printf("Reading keysize[%d]: %d bit key\n", j, keysize[j]);
+    int *found = calloc(10, sizeof(int));
+		// int keysize; // user input, key to run
 		rsa_keys_t keys; // the RSA keys
-		int *found = calloc(10, sizeof(int));
-		char *encrypted = malloc(1024 * 2);
-		char *decrypted = malloc(1024 * 2);
 
-		printf("Enter key size: ");
-		scanf("%d", &keysize); // scanf bad but i'm lazy, change this to fgets later
+		// printf("Enter key size: ");
+		// scanf("%d", &keysize); // scanf bad but i'm lazy, change this to fgets later
 
 		// Read public keys from file
-		char *fname = malloc(1024);
-		sprintf(fname, "keys/public-%d.txt", keysize);
+		sprintf(fname, "keys/public-%d.txt", keysize[j]);
+    printf("fname: %s\n", fname);
 		rsa_read_public_keys(&keys, fname);
 
-		printf("Reading encrypted message\n");
-		sprintf(fname, "keys/encrypted-%d.dat", keysize);
+		// printf("Reading encrypted message\n");
+		sprintf(fname, "keys/encrypted-%d.dat", keysize[j]);
+    printf("fname: %s\n", fname);
 		FILE *fp = fopen(fname, "r+");
 
-		if (fp == NULL) {
+		if (fp == NULL) { 
 			perror("could not open encrypted text");
 			exit(-1);
 		}
 
-		int bytes = fread(encrypted, 1, BLOCK_LEN * (keysize / 8), fp);
+		int bytes = fread(encrypted, 1, BLOCK_LEN * (keysize[j] / 8), fp);
 		printf("Read %d bytes\n", bytes);
 		fclose(fp);
 
@@ -165,23 +168,26 @@ int main(int argc, char **argv) {
 			pthread_join(thread_ids[i], NULL);
 		}
 
+    printf("hey after threads");
 		// Decrypt 
 		rsa_decrypt(encrypted, decrypted, bytes, &keys);
 		printf("Message: %s\n", decrypted);
 
 		uint64_t endtimer = timer_end(t);
-		printf("Took %lu usecs\n", endtimer);
-
-		// Free up the memory we gobbled up
-		free(encrypted);
-		free(decrypted);
-		free(fname);
-		free(found);
-		mpz_clear(keys.d);
-		mpz_clear(keys.n);
-		mpz_clear(keys.e);
-		mpz_clear(keys.p);
-		mpz_clear(keys.q);
-
+    FILE *write = fopen("times.txt", "a");
+    fprintf(write, "%d bit key took %lu usec\tmsg:\t%s\n", keysize[j], endtimer, decrypted);
+    fclose(write); 
+    mpz_clear(keys.d);
+    mpz_clear(keys.n);
+    mpz_clear(keys.e);
+    mpz_clear(keys.p);
+    mpz_clear(keys.q);
 	}
+
+  // Free up the memory we gobbled up
+  free(encrypted);
+  free(decrypted);
+  free(fname);
+
+  exit(0);
 }
