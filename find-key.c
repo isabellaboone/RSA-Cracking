@@ -24,7 +24,7 @@
 #include "rsa.h"
 #include "primefact.h"
 
-#define NUM_THREADS 1 // Number of threads
+#define NUM_THREADS 2 // Number of threads
 #define BLOCK_LEN 32	 // Max num of chars in message (in bytes)
 
 /**
@@ -88,6 +88,7 @@ void *thread_func(void *thread_input) {
   // Check if any other thread has already finished the prime factorization first. 
 	if (*thread_struct->found == 1) {
 		printf("Exiting because it was found!\n");
+		pthread_exit(NULL);
 	}
   
 	mpz_set(p, thread_struct->p); // copy p over
