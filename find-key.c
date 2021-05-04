@@ -24,7 +24,7 @@
 #include "rsa.h"
 #include "primefact.h"
 
-#define NUM_THREADS 4 // Number of threads
+#define NUM_THREADS 1 // Number of threads
 #define BLOCK_LEN 32	 // Max num of chars in message (in bytes)
 
 /**

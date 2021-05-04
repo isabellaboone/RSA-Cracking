@@ -34,6 +34,7 @@ void modular_power_mpz(mpz_t result, mpz_t n, mpz_t c) {
   mpz_add(result, result, c); // add c
   mpz_add(result, result, n); // add n
   mpz_mod(result, result, n); // var % n
+  mpz_clear(TWO);
 }
 
 /**
@@ -67,9 +68,13 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
   // Generate a uniformly distributed random integer in the range 
   // 0 to 2^(mpbitcnt) - 1 inclusively, 128 is bitcnt
   mpz_urandomb(rand_s, state, 128);
+  mpz_clear(rand_s);
 
   // If n == 1, there is no prime divisor for 1.
-  if(!mpz_cmp_ui(n, 1)) { 
+  if(!mpz_cmp_ui(n, 1)) {
+    gmp_randclear(state);
+    mpz_clear(ONE);
+    mpz_clear(TWO);
     *(thread_struct->found) = 1; // Set flag for found
     mpz_set(thread_struct->p, n); // Set p 
     return; // Return, we've found our divisor
@@ -84,10 +89,16 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
 
   // If n % 2 == 0, n is even, we've found our divisor
   if (!mpz_cmp_ui(result_mod_2, 0)) { 
+    gmp_randclear(state);
+    mpz_clear(ONE);
+    mpz_clear(TWO);
+    mpz_clear(result_mod_2);
     *(thread_struct->found) = 1; // Set flag for found 
     mpz_set_ui(thread_struct->p, 2); // Set p
     return; // Return, we've found our divisor 
   }
+
+  mpz_clear(result_mod_2);
 
   // Create & initialize variables to store randomly generated numbers
   mpz_t rand1, rand2; 
@@ -112,6 +123,7 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
   mpz_sub(n_copy, n, TWO); // (n - 2)
   mpz_mod(x, rand1, n_copy); // rand % n - 2
   mpz_add(x, x, TWO); // (rand % n - 2) + 2
+  mpz_clear(rand1);
 
   // Calculate y, which is a copy of x
   mpz_set(y, x);
@@ -121,27 +133,50 @@ void pollardRho(mpz_t n, rsa_decrypt_t *thread_struct) {
   mpz_mod(c, rand2, n_copy); // rand % n - 1
   mpz_add(c, c, ONE); // rand % n - 1 + 1
 
+  mpz_clear(rand2);
+  mpz_clear(n_copy);
+
   mpz_set(d, ONE); // Set d = 1
 
   // While d == 1
   while (!mpz_cmp_ui(d, 1)) { 
+    if(*(thread_struct->found) == 1) { 
+      pthread_exit(NULL);
+    }
     // "Tortise move"
     modular_power_mpz(x, n, c);
     // "Hare move"
     modular_power_mpz(y, n, c); 
     modular_power_mpz(y, n, c); 
 
+    //mpz_clear(c);
+
     mpz_t abs;
+    mpz_init(abs);
     mpz_sub(abs, x, y); // x - y
     mpz_abs(abs, abs); // abs(x-y)
     mpz_gcd(d, abs, n); //gcd(abs(x-y), n)
+    mpz_clear(abs);
 
     // If gcd(x-y,n) == n, call again
     if(!mpz_cmp(d, n)) {
+      gmp_randclear(state);
+      mpz_clear(ONE);
+      mpz_clear(TWO);
+      mpz_clear(x);
+      mpz_clear(y);
+      mpz_clear(d);
       return pollardRho(n, thread_struct);
     }
   }
+
+  gmp_randclear(state);
   // d != 1, we found our p value
   *(thread_struct->found) = 1; // Set found flag
   mpz_set(thread_struct->p, d); // Set p
+  mpz_clear(ONE);
+  mpz_clear(TWO);
+  mpz_clear(d);
+  mpz_clear(x);
+  mpz_clear(y);
 }
