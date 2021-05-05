@@ -17,4 +17,4 @@ find-key: primefact.o rsa.o find-key.o
 	gcc $(CFLAGS) -o find-key $^  -lgmp -lpthread
 	
 clean:
-	rm -f *.o rsa find-key make-test
+	rm -f *.o rsa find-key make-test times.txt
