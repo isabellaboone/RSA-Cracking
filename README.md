@@ -5,7 +5,7 @@ An attempt at cracking high bit RSA keys using Pollard Rho's prime factorization
 120 bit key in 64675356usecs
 
 # Running
-- The program automatically runs all keys from 12-200 bits and logs output to `times.txt`
+- The program automatically runs all keys from 12-200 bits (in `/keys/`) and logs output to `times.txt`
 
 1. `make`
 2. `./find-key` :) 
